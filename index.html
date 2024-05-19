@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div id="game">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    <h2 id="statusMessage"></h2>
+    <div id="scoreboard">
+        <p>Player X: <span id="scoreX">0</span></p>
+        <p>Player O: <span id="scoreO">0</span></p>
+    </div>
+    <button id="restartButton">Restart</button>
+    <script>
+        // script.js
+        const cells = document.querySelectorAll('[data-cell]');
+        const statusMessage = document.getElementById('statusMessage');
+        const restartButton = document.getElementById('restartButton');
+        const scoreXElement = document.getElementById('scoreX');
+        const scoreOElement = document.getElementById('scoreO');
+
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let gameState = ['', '', '', '', '', '', '', '', ''];
+        let scoreX = 0;
+        let scoreO = 0;
+
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        const handleCellClick = (e) => {
+            const cell = e.target;
+            const cellIndex = Array.from(cells).indexOf(cell);
+
+            if (gameState[cellIndex] !== '' || !gameActive) {
+                return;
+            }
+
+            gameState[cellIndex] = currentPlayer;
+            cell.textContent = currentPlayer;
+
+            if (checkWin()) {
+                statusMessage.textContent = `${currentPlayer} wins!`;
+                updateScore(currentPlayer);
+                gameActive = false;
+            } else if (isDraw()) {
+                statusMessage.textContent = 'Draw!';
+                gameActive = false;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusMessage.textContent = `It's ${currentPlayer}'s turn`;
+            }
+        };
+
+        const checkWin = () => {
+            return winningConditions.some(condition => {
+                return condition.every(index => {
+                    return gameState[index] === currentPlayer;
+                });
+            });
+        };
+
+        const isDraw = () => {
+            return gameState.every(cell => cell !== '');
+        };
+
+        const updateScore = (player) => {
+            if (player === 'X') {
+                scoreX++;
+                scoreXElement.textContent = scoreX;
+            } else {
+                scoreO++;
+                scoreOElement.textContent = scoreO;
+            }
+        };
+
+        const restartGame = () => {
+            currentPlayer = 'X';
+            gameActive = true;
+            gameState = ['', '', '', '', '', '', '', '', ''];
+            statusMessage.textContent = `It's ${currentPlayer}'s turn`;
+            cells.forEach(cell => {
+                cell.textContent = '';
+            });
+        };
+
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+        restartButton.addEventListener('click', restartGame);
+
+        statusMessage.textContent = `It's ${currentPlayer}'s turn`;
+
+    </script>
+</body>
+
+</html>
